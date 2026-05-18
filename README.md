@@ -2,6 +2,8 @@
 
 A robust Python automation tool designed to handle batch and direct ZIP uploads to the [Mangataro Hub](https://hub.mangataro.org/dashboard). This script supports scheduling, automatic retry logic, and seamless updates for existing chapters.
 This requires you first login and have an account and a group setup on[ Mangataro.org](https://mangataro.org/).
+I built this to save time uploading and allow me to schedule uploads in advance.
+Note that if the chapter already exists, it will clear the existing pages and replace the chapter's pages, title, etc. with your input value.
 
 ## Features
 * **Direct ZIP Uploads**: Bypasses browser-based file count limits by uploading archives directly.
