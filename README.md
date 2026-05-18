@@ -1,6 +1,7 @@
 # Mangataro Scheduled Uploader
 
-A robust Python automation tool designed to handle batch and direct ZIP uploads to the Mangataro Hub. This script supports scheduling, automatic retry logic, and seamless updates for existing chapters.
+A robust Python automation tool designed to handle batch and direct ZIP uploads to the [Mangataro Hub](https://hub.mangataro.org/dashboard). This script supports scheduling, automatic retry logic, and seamless updates for existing chapters.
+This requires you first login and have an account and a group setup on[ Mangataro.org](https://mangataro.org/).
 
 ## Features
 * **Direct ZIP Uploads**: Bypasses browser-based file count limits by uploading archives directly.
@@ -13,24 +14,10 @@ A robust Python automation tool designed to handle batch and direct ZIP uploads 
 * **Python 3.11+**
 
 ## Installation
-1. Create a `requirements.txt` file in your project directory with the following content:
-   ```text
-   requests>=2.31.0
-   beautifulsoup4>=4.12.0
-   rich>=13.0.0
-   requests-toolbelt>=1.0.0
-   pytz>=2024.1
+
 ```
-
-2. Install the dependencies:
-    
-    Bash
-    
-    ```
-    pip install -r requirements.txt
-    ```
-    
-
+pip install -r requirements.txt
+```
 ## Configuration
 
 Ensure you have a `config.toml` file in the same directory with the following structure:
