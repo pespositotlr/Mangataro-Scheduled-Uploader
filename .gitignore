@@ -1,0 +1,23 @@
+# MangaDex Uploader — .gitignore
+ 
+# ── Credentials (NEVER commit this) ──────────────────
+auth.toml
+Instructions.txt
+*.toml
+ 
+# ── Python ───────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+ 
+# ── OS junk ──────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+mangataro_uploader_v1.py
+Instructions.txt
+series_map.json
+Notes.txt
