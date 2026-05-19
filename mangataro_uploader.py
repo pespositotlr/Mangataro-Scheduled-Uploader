@@ -141,19 +141,19 @@ def store_single(session, zip_path, metadata):
         encoder = MultipartEncoder(fields=fields)
         
         # 3. Retry Logic
-        max_attempts = 2
+        max_attempts = 3
         for attempt in range(1, max_attempts + 1):
             try:
-                with Progress(
-                    TextColumn("[progress.description]{task.description}"),
-                    BarColumn(),
-                    DownloadColumn(),
-                    TextColumn("{task.percentage:>3.0f}%"),
-                ) as progress:
-                    task = progress.add_task("Uploading chapter ZIP...", total=encoder.len)
+                # 1. RE-CREATE the encoder and monitor inside the loop
+                # This ensures the file pointer is fresh for every attempt
+                encoder = MultipartEncoder(fields={'file': ('filename', open(zip_path, 'rb'))})
+                
+                with Progress(...) as progress:
+                    task = progress.add_task("Uploading...", total=encoder.len)
                     monitor = MultipartEncoderMonitor(encoder, lambda m: progress.update(task, completed=m.bytes_read))
                     
-                    res = session.post(url, data=monitor, headers={'Content-Type': monitor.content_type})
+                    # 2. Use a NEW session or at least clear cookies/headers if needed
+                    res = session.post(url, data=monitor, headers={'Content-Type': monitor.content_type}, timeout=300)
                 
                 if res.status_code == 200:
                     return res
@@ -163,12 +163,12 @@ def store_single(session, zip_path, metadata):
             except Exception as e:
                 print(f"Attempt {attempt} failed with error: {e}")
             
+            # Cleanup and wait
             if attempt < max_attempts:
                 print("Waiting 60 seconds before retrying...")
                 time.sleep(60)
-                f.seek(0) # Reset file cursor to start
         
-        return res
+        return None # Return None if all attempts fail
 
 def authenticate(session, email, password):
     res_get = session.get("https://hub.mangataro.org/")
@@ -221,8 +221,8 @@ if __name__ == "__main__":
     session = get_session()
     if authenticate(session, email, password):
         manga_id = get_manga_id(session, args.manga_name)
-        ch_id = find_chapter_id(session, manga_id, args.chapter_num)
         formatted_ch_num = int(args.chapter_num) if args.chapter_num.is_integer() else args.chapter_num
+        ch_id = find_chapter_id(session, manga_id, formatted_ch_num)
         
         meta = {
             'manga_id': manga_id,
@@ -235,7 +235,7 @@ if __name__ == "__main__":
         }
 
         if ch_id:
-            print(f"Chapter {args.chapter_num} exists (ID: {ch_id}). Updating...")
+            print(f"Chapter {formatted_ch_num} exists (ID: {ch_id}). Updating...")
             session.get(f"https://hub.mangataro.org/chapters/delete-images/{ch_id}")
             res = upload_or_edit(session, args.zip_path, meta, ch_id)
         else:
@@ -245,7 +245,7 @@ if __name__ == "__main__":
         print(f"Final Status: {res.status_code}")
         
         if res.status_code == 200:
-            chapter_url = get_chapter_url(session, manga_id, args.chapter_num)
+            chapter_url = get_chapter_url(session, manga_id, formatted_ch_num)
             if chapter_url:
                 print(f"Upload Successful! View here: {chapter_url}")
             else:
