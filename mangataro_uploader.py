@@ -250,3 +250,6 @@ if __name__ == "__main__":
                 print(f"Upload Successful! View here: {chapter_url}")
             else:
                 print("Upload successful, but could not retrieve the public URL.")
+        else:
+            print("Got an unsuccessful status. Did not retrieve upload URL.")
+            print(f"{res.text}")
